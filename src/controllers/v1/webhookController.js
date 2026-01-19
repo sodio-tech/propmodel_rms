@@ -1,5 +1,5 @@
 /**********************************************************************************************
-* Description: Front Wallet Controller - Handles wallet payout retrieval for frontend users.
+* Description: Webhook Controller - Handles webhook notification processing.
 * Author: Sandeep Chavda
 * Last Updated: 2024-06-14
 **********************************************************************************************/
@@ -8,16 +8,16 @@ import webhookService from "../../services/webhookService.js";
 import controllerWrapper from "../../middleware/controllerHandler.js";
 
 /**
- * Retrieves wallet payout history for the authenticated frontend user.
+ * Handles incoming webhook notifications.
  * 
- * This controller fetches the wallet payout records for the logged-in user by accepting
- * query parameters (for pagination, ordering, etc.) and user token data,
- * invokes the service layer, and returns success or error response accordingly.
+ * This controller processes webhook notifications sent by external services. It reads the
+ * webhook payload from the request body, forwards the data to the webhook service layer for
+ * processing, and responds with success or error messages based on the outcome.
  *
- * @param {Object} req - Express request object (expects query params for filtering and pagination)
+ * @param {Object} req - Express request object (expects webhook payload in body)
  * @param {Object} res - Express response object
  * @param {Function} next - Express next middleware function
- * @returns {Object} Success response with payout history data or error response if no records are found
+ * @returns {Object} Success response if notification processed, or error response if failed
  */
 const getWebhookNotification = controllerWrapper(async (req, res, next) => {  
     const params = req.body;

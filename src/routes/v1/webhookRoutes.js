@@ -1,8 +1,8 @@
 /**
- * Frontend Wallet Payout Routes
+ * Webhook Notification Routes
  * --------------------------------------
- * Handles routing for Wallet Payout API endpoints,
- * including retrieval of user wallet payout history.
+ * Handles routing for webhook notification API endpoints,
+ * including processing of incoming webhook notifications.
  * 
  * Author: Sandeep Chavda
  * Last Updated: 14/06/2024
