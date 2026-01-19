@@ -1,11 +1,12 @@
 /**
- * Service module for managing frontend wallet payout operations.
- * ---------------------------------------------------------------
- * Provides methods for fetching and updating wallet payment requests and settings.
+ * Service module for processing webhook notifications.
+ * ---------------------------------------------------
+ * Provides methods for handling incoming webhook events,
+ * storing notification data, and integrating with the database.
  *
- * @module frontWalletService
+ * @module webhookService
  * @author Sandeep Chavda
- * @since 12/12/2025
+ * @since 14/06/2024
  */
 
 import dotenv from "dotenv";
