@@ -1,0 +1,8 @@
+{
+  "success": "Éxito",
+  "user_fetched": "Usuario obtenido con éxito",
+  "user_not_found": "Usuario no encontrado",
+  "user_created": "Usuariov encontrado con éxito",
+  "validation_failed": "La validación falló",
+  "internal_error": "Error interno del servidor"
+}

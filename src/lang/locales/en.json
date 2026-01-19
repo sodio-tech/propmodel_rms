@@ -1,0 +1,7 @@
+{
+  "success": "Success",
+  "record_found": "Records are found",
+  "record_not_found": "Records are not found",
+  "something_wrong" : "Something went wrong",
+  "update_setting" : "Settings has been updated"
+}
