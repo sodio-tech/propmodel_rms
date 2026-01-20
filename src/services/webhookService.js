@@ -25,7 +25,7 @@ async function webhookNotificationService(params = {}) {
 
         if (!platformAccount) { 
             // If login not found, optionally handle the case (return null or throw, etc.)
-            return { success: false, message: "Account not found for the given login." };
+            // return { success: false, message: "Account not found for the given login." };
         }
 
         // Insert notification data into rms_notifications table
