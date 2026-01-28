@@ -44,13 +44,9 @@ async function webhookNotificationService(params = {}) {
         };
 
         await knex("rms_notifications").insert(insertData);
-        console.log(platformAccount.email);
-            console.log(notification_type.trim());
+       
         if(platformAccount.email == 'shivamwar97@gmail.com' || platformAccount.email == 'jeya@sodio.tech')
         {
-            console.log(platformAccount.email);
-            console.log(notification_type.trim());
-
             const notificationType = notification_type.trim();
             if (
                 notificationType == 'Max Risk Per Trade' || notificationType == 'Soft Breach Symbol Alert' || notificationType == 'Soft Breach Trade Alert'
@@ -64,7 +60,7 @@ async function webhookNotificationService(params = {}) {
                     "trade_id": tradeId,
                     "description": description
                 }
-                console.log(reqParams);
+               
                 // captureMessage(`Request params: ${platformAccount.uuid}`, 'info', {
                 //     operation: 'Max Risk Per Trade',
                 //     extra: {
@@ -78,7 +74,6 @@ async function webhookNotificationService(params = {}) {
                 // });  
 
                 const response = await mt5Service.getRmsBreachhandler(reqParams);
-                console.log(response);
                 if(response?.data.breach_type == 'hard_breach')
                 {
                     await knex("platform_accounts")
@@ -92,7 +87,7 @@ async function webhookNotificationService(params = {}) {
         
     } catch (error) {
         captureException(error);
-        console.error(`Failed to remove wallet balance: ${error.message}`);
+        console.error(`Failed to webhook: ${error.message}`);
         return null;
     }
 }
