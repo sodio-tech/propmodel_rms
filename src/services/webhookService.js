@@ -46,6 +46,9 @@ async function webhookNotificationService(params = {}) {
 
         if(platformAccount.email == 'shivamwar97@gmail.com' || platformAccount.email == 'jeya@sodio.tech')
         {
+            console.log(platformAccount.email);
+            console.log(notification_type.trim());
+
             const notificationType = notification_type.trim();
             if (
                 notificationType == 'Max Risk Per Trade' || notificationType == 'Soft Breach Symbol Alert' || notificationType == 'Soft Breach Trade Alert'
@@ -59,7 +62,7 @@ async function webhookNotificationService(params = {}) {
                     "trade_id": tradeId,
                     "description": description
                 }
-                
+                console.log(reqParams);
                 // captureMessage(`Request params: ${platformAccount.uuid}`, 'info', {
                 //     operation: 'Max Risk Per Trade',
                 //     extra: {
