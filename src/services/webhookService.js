@@ -96,7 +96,7 @@ async function webhookNotificationService(params = {}) {
                     }
                 };
                 const activity = activityTypes[notificationType];
-                console.log(activity);
+                
                 if (activity) {
                     await storeActivityLog({
                         user_uuid: platformAccount?.user_uuid,
