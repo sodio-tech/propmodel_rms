@@ -80,6 +80,35 @@ async function webhookNotificationService(params = {}) {
                         .where("platform_login_id", login)
                         .update({ status: 0 });
                 }
+                // Store activity record (optimized)
+                const activityTypes = {
+                    'Max Risk Per Trade': {
+                        action: 'Max_Risk_Per_Trade',
+                        metadata: `Your account No - ${login} is breached max risk per trade.`
+                    },
+                    'Soft Breach Symbol Alert': {
+                        action: 'Soft_Breach_Symbol_Alert',
+                        metadata: `Your account No - ${login} is breached soft breach symbol alert.`
+                    },
+                    'Soft Breach Trade Alert': {
+                        action: 'Soft_Breach_Trade_Alert',
+                        metadata: `Your account No - ${login} is breached soft breach trade alert.`
+                    }
+                };
+
+                const activity = activityTypes[notificationType];
+                if (activity) {
+                    await storeActivityLog({
+                        user_uuid: platformAccount?.user_uuid,
+                        action: activity?.action,
+                        metadata: activity?.metadata,
+                        user_type: 'USER',
+                        event_type: 'CHALLENGE',
+                        new_values: JSON.stringify(params),
+                        created_by: platformAccount?.user_uuid
+                    });
+                }
+
             }
             
         }
