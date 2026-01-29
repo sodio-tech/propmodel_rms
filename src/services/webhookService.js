@@ -95,8 +95,8 @@ async function webhookNotificationService(params = {}) {
                         metadata: `Your account No - ${login} is breached soft breach trade alert.`
                     }
                 };
-
                 const activity = activityTypes[notificationType];
+                console.log(activity);
                 if (activity) {
                     await storeActivityLog({
                         user_uuid: platformAccount?.user_uuid,
