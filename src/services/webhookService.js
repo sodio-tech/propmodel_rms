@@ -49,13 +49,30 @@ async function webhookNotificationService(params = {}) {
         {
             const notificationType = notification_type.trim();
             if (
-                notificationType == 'Max Risk Per Trade' || notificationType == 'Soft Breach Symbol Alert' || notificationType == 'Soft Breach Trade Alert'
+                notificationType == 'Stop-Loss Risk - Max Risk Per Trade' || notificationType == 'Stop-Loss Risk - Soft Breach Symbol Alert' || notificationType == 'Stop-Loss Risk - Soft Breach Trade Alert'
             )
             {
+                let breachType = '';
+
+                if(notificationType == 'Stop-Loss Risk - Max Risk Per Trade')
+                {
+                    breachType = 'Max Risk Per Trade';
+                }
+                else if(notificationType == 'Stop-Loss Risk - Soft Breach Symbol Alert')
+                {
+                    breachType = 'Soft Breach Symbol Alert';
+                }
+                else if(notificationType == 'Stop-Loss Risk - Soft Breach Trade Alert')
+                {
+                    breachType = 'Soft Breach Trade Alert';
+                }
+
+
+                
                 const tradeId = description.replace(/^Trade (\d+).*$/, '$1');
                 const reqParams = { 
                     "login": login,
-                    "breach_name": notification_type.trim(),
+                    "breach_name": breachType,
                     "symbol": symbol,
                     "trade_id": tradeId,
                     "description": description
@@ -82,15 +99,15 @@ async function webhookNotificationService(params = {}) {
                 }
                 // Store activity record (optimized)
                 const activityTypes = {
-                    'Max Risk Per Trade': {
+                    'Stop-Loss Risk - Max Risk Per Trade': {
                         action: 'Max_Risk_Per_Trade',
                         metadata: `Your account No - ${login} is breached max risk per trade.`
                     },
-                    'Soft Breach Symbol Alert': {
+                    'Stop-Loss Risk - Soft Breach Symbol Alert': {
                         action: 'Soft_Breach_Symbol_Alert',
                         metadata: `Your account No - ${login} is breached soft breach symbol alert.`
                     },
-                    'Soft Breach Trade Alert': {
+                    'Stop-Loss Risk - Soft Breach Trade Alert': {
                         action: 'Soft_Breach_Trade_Alert',
                         metadata: `Your account No - ${login} is breached soft breach trade alert.`
                     }
