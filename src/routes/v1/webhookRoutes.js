@@ -14,6 +14,15 @@ import verifyToken from "../../middleware/verifyToken.js";
 
 const router = express.Router();
 
+/**
+ * POST /webhook/notification
+ * --------------------------
+ * Route to receive and process webhook notifications from external sources.
+ * This endpoint requires a valid authentication token (verifyToken middleware).
+ * The webhook payload is expected in the request body.
+ * On success: returns status 200 with a confirmation message.
+ * On failure: returns status 404 or an error message.
+ */
 router.post(
     '/webhook/notification',
     verifyToken,

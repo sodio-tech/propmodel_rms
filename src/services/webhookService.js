@@ -12,20 +12,26 @@
 import dotenv from "dotenv";
 import { knex } from "propmodel_api_core"; 
 import { storeActivityLog} from "../utils/common_function.js";
+import mt5Service from "./mt5Service.js";
+import { captureException, captureMessage } from "propmodel_sentry_core";
 //  Load environment variables from a .env file into process.env
 dotenv.config();
 
 async function webhookNotificationService(params = {}) {
     try {
+        
         const { notification_type, login, description, date,symbol } = params;
+        console.log(params);
         // Check if login exists in platform_accounts
         const platformAccount = await knex("platform_accounts")
-            .where({ 'platform_login_id' : login })
+            .join("users", "platform_accounts.user_uuid", "users.uuid")
+            .where({ 'platform_accounts.platform_login_id': login })
+            .select("platform_accounts.user_uuid","platform_accounts.uuid","users.email")
             .first();
 
         if (!platformAccount) { 
-            // If login not found, optionally handle the case (return null or throw, etc.)
-            return { success: false, message: "Account not found for the given login." };
+            return;
+            // return { success: false, message: "Account not found for the given login." };
         }
 
         // Insert notification data into rms_notifications table
@@ -39,11 +45,96 @@ async function webhookNotificationService(params = {}) {
         };
 
         await knex("rms_notifications").insert(insertData);
+       
+        if(platformAccount.email == 'Shivamwar97@gmail.com' || platformAccount.email == 'jeya@sodio.tech')
+        {
+            const notificationType = notification_type.trim();
+            if (
+                notificationType == 'Stop-Loss Risk - Max Risk Per Trade' || notificationType == 'Stop-Loss Risk - Soft Breach Symbol Alert' || notificationType == 'Stop-Loss Risk - Soft Breach Trade Alert'
+            )
+            {
+                let breachType = '';
 
+                if(notificationType == 'Stop-Loss Risk - Max Risk Per Trade')
+                {
+                    breachType = 'Max Risk Per Trade';
+                }
+                else if(notificationType == 'Stop-Loss Risk - Soft Breach Symbol Alert')
+                {
+                    breachType = 'Soft Breach Symbol Alert';
+                }
+                else if(notificationType == 'Stop-Loss Risk - Soft Breach Trade Alert')
+                {
+                    breachType = 'Soft Breach Trade Alert';
+                }
+
+
+                
+                const tradeId = description.replace(/^Trade (\d+).*$/, '$1');
+                const reqParams = { 
+                    "login": login,
+                    "breach_name": breachType,
+                    "symbol": symbol,
+                    "trade_id": tradeId,
+                    "description": description
+                }
+               
+                // captureMessage(`Request params: ${platformAccount.uuid}`, 'info', {
+                //     operation: 'Max Risk Per Trade',
+                //     extra: {
+                //         platform_account_uuid: platformAccount.uuid,
+                //         user_uuid: platformAccount.user_uuid,
+                //         login: platformAccount.platform_login_id || login,
+                //         email: platformAccount.email,
+                //         symbol:symbol,
+                //         tradeId:tradeId
+                //     }
+                // });  
+
+                const response = await mt5Service.getRmsBreachhandler(reqParams);
+                if(response?.data.breach_type == 'hard_breach')
+                {
+                    await knex("platform_accounts")
+                        .where("platform_login_id", login)
+                        .update({ status: 0 });
+                }
+                // Store activity record (optimized)
+                const activityTypes = {
+                    'Stop-Loss Risk - Max Risk Per Trade': {
+                        action: 'Max_Risk_Per_Trade',
+                        metadata: `Your account No - ${login} is breached max risk per trade.`
+                    },
+                    'Stop-Loss Risk - Soft Breach Symbol Alert': {
+                        action: 'Soft_Breach_Symbol_Alert',
+                        metadata: `Your account No - ${login} is breached soft breach symbol alert.`
+                    },
+                    'Stop-Loss Risk - Soft Breach Trade Alert': {
+                        action: 'Soft_Breach_Trade_Alert',
+                        metadata: `Your account No - ${login} is breached soft breach trade alert.`
+                    }
+                };
+                const activity = activityTypes[notificationType];
+                
+                if (activity) {
+                    await storeActivityLog({
+                        user_uuid: platformAccount?.user_uuid,
+                        action: activity?.action,
+                        metadata: activity?.metadata,
+                        user_type: 'USER',
+                        event_type: 'CHALLENGE',
+                        new_values: JSON.stringify(params),
+                        created_by: platformAccount?.user_uuid
+                    });
+                }
+
+            }
+            
+        }
         return { success: true, message: "Notification stored successfully." };
         
     } catch (error) {
-        console.error(`Failed to remove wallet balance: ${error.message}`);
+        captureException(error);
+        console.error(`Failed to webhook: ${error.message}`);
         return null;
     }
 }

@@ -7,7 +7,6 @@ const messageAttributes = {
 const storeActivityLog = async (reqData) => {
     try {
        await sqsProducer.sendMessage('log', reqData, messageAttributes);
-      
     //    return response;
     } catch (error) {
         console.error('Error sending activity log to SQS:', error);
