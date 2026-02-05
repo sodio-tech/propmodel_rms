@@ -46,8 +46,8 @@ async function webhookNotificationService(params = {}) {
 
         await knex("rms_notifications").insert(insertData);
        
-        // if(platformAccount.email == 'Shivamwar97@gmail.com' || platformAccount.email == 'jeya@sodio.tech')
-        // {
+        if(platformAccount.email == 'Shivamwar97@gmail.com' || platformAccount.email == 'jeya@sodio.tech')
+        {
             const notificationType = notification_type.trim();
             if (
                 notificationType == 'Stop-Loss Risk - Max Risk Per Trade' || notificationType == 'Stop-Loss Risk - Soft Breach Symbol Alert' || notificationType == 'Stop-Loss Risk - Soft Breach Trade Alert'
@@ -137,7 +137,7 @@ async function webhookNotificationService(params = {}) {
 
             }
             
-        // }
+        }
         return { success: true, message: "Notification stored successfully." };
         
     } catch (error) {
