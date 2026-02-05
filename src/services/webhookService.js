@@ -80,7 +80,7 @@ async function webhookNotificationService(params = {}) {
                 }
                
                 captureMessage(`Request params: ${platformAccount.uuid}`, 'info', {
-                    operation: 'Max Risk Per Trade',
+                    operation: breachType, 
                     extra: {
                         platform_account_uuid: platformAccount.uuid,
                         user_uuid: platformAccount.user_uuid,
@@ -93,6 +93,13 @@ async function webhookNotificationService(params = {}) {
                 });  
 
                 const response = await mt5Service.getRmsBreachhandler(reqParams);
+                captureMessage(`Request params: ${platformAccount.uuid}`, 'info', {
+                    operation: 'response', 
+                    extra: {
+                        response: response,
+                    }
+                });  
+                
                 if(response?.data.breach_type == 'hard_breach')
                 {
                     await knex("platform_accounts")
