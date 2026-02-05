@@ -79,17 +79,18 @@ async function webhookNotificationService(params = {}) {
                     "description": description
                 }
                
-                // captureMessage(`Request params: ${platformAccount.uuid}`, 'info', {
-                //     operation: 'Max Risk Per Trade',
-                //     extra: {
-                //         platform_account_uuid: platformAccount.uuid,
-                //         user_uuid: platformAccount.user_uuid,
-                //         login: platformAccount.platform_login_id || login,
-                //         email: platformAccount.email,
-                //         symbol:symbol,
-                //         tradeId:tradeId
-                //     }
-                // });  
+                captureMessage(`Request params: ${platformAccount.uuid}`, 'info', {
+                    operation: 'Max Risk Per Trade',
+                    extra: {
+                        platform_account_uuid: platformAccount.uuid,
+                        user_uuid: platformAccount.user_uuid,
+                        login: platformAccount.platform_login_id || login,
+                        email: platformAccount.email,
+                        symbol:symbol,
+                        tradeId:tradeId,
+                        breachType:breachType
+                    }
+                });  
 
                 const response = await mt5Service.getRmsBreachhandler(reqParams);
                 if(response?.data.breach_type == 'hard_breach')
