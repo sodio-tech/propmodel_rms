@@ -19,7 +19,7 @@ dotenv.config();
 
 async function webhookNotificationService(params = {}) {
     try {
-        return;
+        
         const { notification_type, login, description, date,symbol } = params;
         console.log(params);
         // Check if login exists in platform_accounts
