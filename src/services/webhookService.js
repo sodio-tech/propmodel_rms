@@ -13,6 +13,7 @@ import dotenv from "dotenv";
 import { knex } from "propmodel_api_core"; 
 import { storeActivityLog} from "../utils/common_function.js";
 import mt5Service from "./mt5Service.js";
+import emailService from "../emailService.js";
 import { captureException, captureMessage } from "propmodel_sentry_core";
 //  Load environment variables from a .env file into process.env
 dotenv.config();
@@ -46,7 +47,7 @@ async function webhookNotificationService(params = {}) {
 
         await knex("rms_notifications").insert(insertData);
        
-        if(platformAccount.email == 'Shivamwar97@gmail.com' || platformAccount.email == 'jeya@sodio.tech')
+        if(platformAccount.email == 'Shivamwar97@gmail.com' || platformAccount.email == 'jeya@sodio.tech' || platformAccount.email == 'laluxbt@gmail.com' || platformAccount.email == 'hamza772201@gmail.com' || platformAccount.email == 'paulosimaphale1@gmail.com')
         {
             const notificationType = notification_type.trim();
             if (
@@ -106,35 +107,59 @@ async function webhookNotificationService(params = {}) {
                         .where("platform_login_id", login)
                         .update({ status: 0 });
                 }
-                // Store activity record (optimized)
-                const activityTypes = {
-                    'Stop-Loss Risk - Max Risk Per Trade': {
-                        action: 'Max_Risk_Per_Trade',
-                        metadata: `Your account No - ${login} is breached max risk per trade.`
-                    },
-                    'Stop-Loss Risk - Soft Breach Symbol Alert': {
-                        action: 'Soft_Breach_Symbol_Alert',
-                        metadata: `Your account No - ${login} is breached soft breach symbol alert.`
-                    },
-                    'Stop-Loss Risk - Soft Breach Trade Alert': {
-                        action: 'Soft_Breach_Trade_Alert',
-                        metadata: `Your account No - ${login} is breached soft breach trade alert.`
+                if(response?.success)
+                {
+                    // Store activity record (optimized)
+                    const activityTypes = {
+                        'Stop-Loss Risk - Max Risk Per Trade': {
+                            action: 'Max_Risk_Per_Trade',
+                            metadata: `Your account No - ${login} is breached max risk per trade.`,
+                            email_type : 'CHALLENGE_FAILED'
+                        },
+                        'Stop-Loss Risk - Soft Breach Symbol Alert': {
+                            action: 'Soft_Breach_Symbol_Alert',
+                            metadata: `Your account No - ${login} is breached soft breach symbol alert.`,
+                            email_type : 'SOFT_BREACHED'
+                        },
+                        'Stop-Loss Risk - Soft Breach Trade Alert': {
+                            action: 'Soft_Breach_Trade_Alert',
+                            metadata: `Your account No - ${login} is breached soft breach trade alert.`,
+                            email_type : 'SOFT_BREACHED'
+                        }
+                    };
+                    const activity = activityTypes[notificationType];
+                    
+                    if (activity) {
+                        await storeActivityLog({
+                            user_uuid: platformAccount?.user_uuid,
+                            action: activity?.action,
+                            metadata: activity?.metadata,
+                            user_type: 'USER',
+                            event_type: 'CHALLENGE',
+                            new_values: JSON.stringify(params),
+                            created_by: platformAccount?.user_uuid
+                        });
                     }
-                };
-                const activity = activityTypes[notificationType];
-                
-                if (activity) {
-                    await storeActivityLog({
-                        user_uuid: platformAccount?.user_uuid,
-                        action: activity?.action,
-                        metadata: activity?.metadata,
-                        user_type: 'USER',
-                        event_type: 'CHALLENGE',
-                        new_values: JSON.stringify(params),
-                        created_by: platformAccount?.user_uuid
-                    });
-                }
 
+                    // Send email to user
+                    // let emailUrl = `${process.env.EMAIL_API_URL}/api/v1/send-email`;
+                    // const emailData = {
+                    //     email: account.email,
+                    //     email_type: activity?.email_type,
+                    //     data: {
+                    //         first_name: account.first_name,
+                    //         account_number: login
+                    //     }
+                    // };
+                    
+                    // try {
+                    //     await emailService(emailUrl, emailData, 'POST');
+                    // } catch (error) {
+                    //     captureException(error);
+                        
+                    // } 
+                }
+            
             }
             
         }
