@@ -76,7 +76,7 @@ async function webhookNotificationService(params = {}) {
                     "login": login,
                     "breach_name": breachType,
                     "symbol": symbol,
-                    "trade_id": tradeId,
+                    "trade_id": tradeId ? tradeId : Math.floor(Math.random() * 1000000),
                     "description": description
                 }
                
