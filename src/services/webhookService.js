@@ -47,7 +47,7 @@ async function webhookNotificationService(params = {}) {
 
         await knex("rms_notifications").insert(insertData);
        
-        if(platformAccount.email == 'Shivamwar97@gmail.com' || platformAccount.email == 'jeya@sodio.tech' || platformAccount.email == 'laluxbt@gmail.com' || platformAccount.email == 'hamza772201@gmail.com' || platformAccount.email == 'paulosimaphale1@gmail.com')
+        if(platformAccount.email == 'preston@yeeld.com' || platformAccount.email == 'Shivamwar97@gmail.com' || platformAccount.email == 'jeya@sodio.tech' || platformAccount.email == 'laluxbt@gmail.com' || platformAccount.email == 'hamza772201@gmail.com' || platformAccount.email == 'paulosimaphale1@gmail.com')
         {
             const notificationType = notification_type.trim();
             if (
