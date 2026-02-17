@@ -71,7 +71,8 @@ async function webhookNotificationService(params = {}) {
 
 
                 
-                const tradeId = description.replace(/^Trade (\d+).*$/, '$1');
+                const tradeIdMatch = description.match(/^Trade (\d+)/);
+                const tradeId = tradeIdMatch ? tradeIdMatch[1] : null;
                 const reqParams = { 
                     "login": login,
                     "breach_name": breachType,
