@@ -76,30 +76,30 @@ async function webhookNotificationService(params = {}) {
                     "login": login,
                     "breach_name": breachType,
                     "symbol": symbol,
-                    "trade_id": tradeId,
+                    "trade_id": tradeId ? tradeId : Math.floor(Math.random() * 1000000),
                     "description": description
                 }
                
-                // captureMessage(`Request params: ${platformAccount.uuid}`, 'info', {
-                //     operation: breachType, 
-                //     extra: {
-                //         platform_account_uuid: platformAccount.uuid,
-                //         user_uuid: platformAccount.user_uuid,
-                //         login: platformAccount.platform_login_id || login,
-                //         email: platformAccount.email,
-                //         symbol:symbol,
-                //         tradeId:tradeId,
-                //         breachType:breachType
-                //     }
-                // });  
+                captureMessage(`Request params: ${platformAccount.uuid}`, 'info', {
+                    operation: breachType, 
+                    extra: {
+                        platform_account_uuid: platformAccount.uuid,
+                        user_uuid: platformAccount.user_uuid,
+                        login: platformAccount.platform_login_id || login,
+                        email: platformAccount.email,
+                        symbol:symbol,
+                        tradeId:tradeId,
+                        breachType:breachType
+                    }
+                });  
 
                 const response = await mt5Service.getRmsBreachhandler(reqParams);
-                // captureMessage(`Request params: ${platformAccount.uuid}`, 'info', {
-                //     operation: 'response', 
-                //     extra: {
-                //         response: response,
-                //     }
-                // });  
+                captureMessage(`Request params: ${platformAccount.uuid}`, 'info', {
+                    operation: 'response', 
+                    extra: {
+                        response: response,
+                    }
+                });  
 
                 if(response?.data.breach_type == 'hard_breach')
                 {
