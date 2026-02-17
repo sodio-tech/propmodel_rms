@@ -51,23 +51,23 @@ async function webhookNotificationService(params = {}) {
         {
             const notificationType = notification_type.trim();
             if (
-                notificationType == 'Stop-Loss Risk - Max Risk Per Trade' || notificationType == 'Stop-Loss Risk - Soft Breach Symbol Alert' || notificationType == 'Stop-Loss Risk - Soft Breach Trade Alert'
+                notificationType == 'Max Risk Per Trade' || notificationType == 'Soft Breach Symbol Alert' || notificationType == 'Soft Breach Trade Alert'
             )
             {
-                let breachType = '';
+                let breachType = notificationType;
 
-                if(notificationType == 'Stop-Loss Risk - Max Risk Per Trade')
-                {
-                    breachType = 'Max Risk Per Trade';
-                }
-                else if(notificationType == 'Stop-Loss Risk - Soft Breach Symbol Alert')
-                {
-                    breachType = 'Soft Breach Symbol Alert';
-                }
-                else if(notificationType == 'Stop-Loss Risk - Soft Breach Trade Alert')
-                {
-                    breachType = 'Soft Breach Trade Alert';
-                }
+                // if(notificationType == 'Stop-Loss Risk - Max Risk Per Trade')
+                // {
+                //     breachType = 'Max Risk Per Trade';
+                // }
+                // else if(notificationType == 'Stop-Loss Risk - Soft Breach Symbol Alert')
+                // {
+                //     breachType = 'Soft Breach Symbol Alert';
+                // }
+                // else if(notificationType == 'Stop-Loss Risk - Soft Breach Trade Alert')
+                // {
+                //     breachType = 'Soft Breach Trade Alert';
+                // }
 
 
                 
@@ -111,17 +111,17 @@ async function webhookNotificationService(params = {}) {
                 {
                     // Store activity record (optimized)
                     const activityTypes = {
-                        'Stop-Loss Risk - Max Risk Per Trade': {
+                        'Max Risk Per Trade': {
                             action: 'Max_Risk_Per_Trade',
                             metadata: `Your account No - ${login} is breached max risk per trade.`,
                             email_type : 'CHALLENGE_FAILED'
                         },
-                        'Stop-Loss Risk - Soft Breach Symbol Alert': {
+                        'Soft Breach Symbol Alert': {
                             action: 'Soft_Breach_Symbol_Alert',
                             metadata: `Your account No - ${login} is breached soft breach symbol alert.`,
                             email_type : 'SOFT_BREACHED'
                         },
-                        'Stop-Loss Risk - Soft Breach Trade Alert': {
+                        'Soft Breach Trade Alert': {
                             action: 'Soft_Breach_Trade_Alert',
                             metadata: `Your account No - ${login} is breached soft breach trade alert.`,
                             email_type : 'SOFT_BREACHED'
