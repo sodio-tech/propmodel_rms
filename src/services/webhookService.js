@@ -152,13 +152,18 @@ async function webhookNotificationService(params = {}) {
                     let emailUrl = `${process.env.EMAIL_API_URL}/api/v1/send-email`;
                     const emailData = {
                         email: platformAccount?.email,
-                        email_type: response?.data.breach_type == 'hard_breach' ? 'SOFTBREACH_2_PERCENT' : activity?.email_type,
+                        email_type: response?.data.breach_type == 'hard_breach' ? 'STOP_LOSS_VIOLATION' : activity?.email_type,
                         data: {
                             first_name: platformAccount?.first_name,
                             detail: description
                         }
                     }; 
-                    
+                    captureMessage(`Email data:`, 'info', {
+                        operation: 'response', 
+                        extra: {
+                            response: emailData,
+                        }
+                    });  
                     try {
                         await emailService(emailUrl, emailData, 'POST');
                     } catch (error) {
