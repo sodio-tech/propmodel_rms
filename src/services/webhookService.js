@@ -81,33 +81,8 @@ async function webhookNotificationService(params = {}) {
                     "description": description
                 }
                
-                // captureMessage(`Request params: ${platformAccount.uuid}`, 'info', {
-                //     operation: breachType, 
-                //     extra: {
-                //         platform_account_uuid: platformAccount.uuid,
-                //         user_uuid: platformAccount.user_uuid,
-                //         login: platformAccount.platform_login_id || login,
-                //         email: platformAccount.email,
-                //         symbol:symbol,
-                //         tradeId:tradeId,
-                //         breachType:breachType
-                //     }
-                // });  
-
                 const response = await mt5Service.getRmsBreachhandler(reqParams);
-                // captureMessage(`Request params: ${platformAccount.uuid}`, 'info', {
-                //     operation: 'response', 
-                //     extra: {
-                //         response: response,
-                //     }
-                // });  
-
-                // if(response?.data.breach_type == 'hard_breach')
-                // {
-                //     await knex("platform_accounts")
-                //         .where("platform_login_id", login)
-                //         .update({ status: 0 });
-                // }
+                
                 if(response?.success)
                 {
                     // Store activity record (optimized)
@@ -129,10 +104,17 @@ async function webhookNotificationService(params = {}) {
                         }
                     };
                     // Check for hard breach and add "Hard Breach" activity type if not present
+                    let userEmail = platformAccount?.email;
                     if (response?.data.breach_type == 'hard_breach') {
                         await knex("platform_accounts")
                         .where("platform_login_id", login)
                         .update({ status: 0 });
+                        let emailType = 'SOFT_TO_HARD_BREACH'; 
+                        let eData = {
+                            first_name: platformAccount?.first_name,
+                            detail: description
+                        }
+                        await sendEmail(userEmail, emailType, eData);
                     }
                     const activity = activityTypes[notificationType];
                     
@@ -149,26 +131,32 @@ async function webhookNotificationService(params = {}) {
                     }
 
                     // Send email to user
-                    let emailUrl = `${process.env.EMAIL_API_URL}/api/v1/send-email`;
+                    let emailType = response?.data.breach_type == 'hard_breach' ? 'STOP_LOSS_VIOLATION' : activity?.email_type; 
                     const emailData = {
-                        email: platformAccount?.email,
-                        email_type: response?.data.breach_type == 'hard_breach' ? 'STOP_LOSS_VIOLATION' : activity?.email_type,
-                        data: {
-                            first_name: platformAccount?.first_name,
-                            detail: description
-                        }
-                    }; 
-                    captureMessage(`Email data:`, 'info', {
-                        operation: 'response', 
-                        extra: {
-                            response: emailData,
-                        }
-                    });  
-                    try {
-                        await emailService(emailUrl, emailData, 'POST');
-                    } catch (error) {
-                        captureException(error);
-                    } 
+                        first_name: platformAccount?.first_name,
+                        detail: description
+                    }
+                    await sendEmail(userEmail, emailType, emailData);
+                    // let emailUrl = `${process.env.EMAIL_API_URL}/api/v1/send-email`;
+                    // const emailData = {
+                    //     email: platformAccount?.email,
+                    //     email_type: response?.data.breach_type == 'hard_breach' ? 'STOP_LOSS_VIOLATION' : activity?.email_type,
+                    //     data: {
+                    //         first_name: platformAccount?.first_name,
+                    //         detail: description
+                    //     }
+                    // }; 
+                    // captureMessage(`Email data:`, 'info', {
+                    //     operation: 'response', 
+                    //     extra: {
+                    //         response: emailData,
+                    //     }
+                    // });  
+                    // try {
+                    //     await emailService(emailUrl, emailData, 'POST');
+                    // } catch (error) {
+                    //     captureException(error);
+                    // } 
                 }
             
             }
@@ -180,6 +168,21 @@ async function webhookNotificationService(params = {}) {
         captureException(error);
         console.error(`Failed to webhook: ${error.message}`);
         return null;
+    }
+}
+
+async function sendEmail(email, emailType, data) {
+    const emailUrl = `${process.env.EMAIL_API_URL}/api/v1/send-email`;
+    const emailData = {
+        email,
+        email_type: emailType,
+        data
+    };
+    try {
+        await emailService(emailUrl, emailData, 'POST');
+    } catch (error) {
+        captureException(error);
+        throw error;
     }
 }
 
