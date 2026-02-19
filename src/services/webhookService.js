@@ -27,7 +27,7 @@ async function webhookNotificationService(params = {}) {
         const platformAccount = await knex("platform_accounts")
             .join("users", "platform_accounts.user_uuid", "users.uuid")
             .where({ 'platform_accounts.platform_login_id': login })
-            .select("platform_accounts.user_uuid","platform_accounts.uuid","users.email")
+            .select("platform_accounts.user_uuid","platform_accounts.uuid","users.email","users.first_name")
             .first();
 
         if (!platformAccount) { 
@@ -115,17 +115,17 @@ async function webhookNotificationService(params = {}) {
                         'Max Risk Per Trade': {
                             action: 'Max_Risk_Per_Trade',
                             metadata: `Your account No - ${login} is breached max risk per trade.`,
-                            email_type : 'CHALLENGE_FAILED'
+                            email_type : 'STOP_LOSS_VIOLATION'
                         },
                         'Soft Breach Symbol Alert': {
                             action: 'Soft_Breach_Symbol_Alert',
                             metadata: `Your account No - ${login} is breached soft breach symbol alert.`,
-                            email_type : 'SOFT_BREACHED'
+                            email_type : 'SOFTBREACH_2_PERCENT'
                         },
                         'Soft Breach Trade Alert': {
                             action: 'Soft_Breach_Trade_Alert',
                             metadata: `Your account No - ${login} is breached soft breach trade alert.`,
-                            email_type : 'SOFT_BREACHED'
+                            email_type : 'SOFTBREACH_2_PERCENT'
                         }
                     };
                     const activity = activityTypes[notificationType];
@@ -143,22 +143,21 @@ async function webhookNotificationService(params = {}) {
                     }
 
                     // Send email to user
-                    // let emailUrl = `${process.env.EMAIL_API_URL}/api/v1/send-email`;
-                    // const emailData = {
-                    //     email: account.email,
-                    //     email_type: activity?.email_type,
-                    //     data: {
-                    //         first_name: account.first_name,
-                    //         account_number: login
-                    //     }
-                    // };
+                    let emailUrl = `${process.env.EMAIL_API_URL}/api/v1/send-email`;
+                    const emailData = {
+                        email: platformAccount?.email,
+                        email_type: activity?.email_type,
+                        data: {
+                            first_name: platformAccount?.first_name,
+                            detail: description
+                        }
+                    };
                     
-                    // try {
-                    //     await emailService(emailUrl, emailData, 'POST');
-                    // } catch (error) {
-                    //     captureException(error);
-                        
-                    // } 
+                    try {
+                        await emailService(emailUrl, emailData, 'POST');
+                    } catch (error) {
+                        captureException(error);
+                    } 
                 }
             
             }

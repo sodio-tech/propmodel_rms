@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { captureException } from "propmodel_sentry_core";
+import { captureException,captureMessage } from "propmodel_sentry_core";
 
 /**
  * Sends an email by calling the specified API endpoint using apiUtils.
@@ -22,6 +22,12 @@ async function sendEmail(url, params = {}, method = 'POST', headers = {}) {
       ...(method !== 'GET' && method !== 'HEAD' ? { data: params } : {})
     };
     const response = await axios(config);
+     captureMessage(`Email Response:`, 'info', {
+          operation: 'response', 
+          extra: {
+              response: response,
+          }
+      });  
     // console.log('response', response);
     return response;
   } catch (error) {
