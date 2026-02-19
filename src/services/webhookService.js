@@ -102,12 +102,12 @@ async function webhookNotificationService(params = {}) {
                 //     }
                 // });  
 
-                if(response?.data.breach_type == 'hard_breach')
-                {
-                    await knex("platform_accounts")
-                        .where("platform_login_id", login)
-                        .update({ status: 0 });
-                }
+                // if(response?.data.breach_type == 'hard_breach')
+                // {
+                //     await knex("platform_accounts")
+                //         .where("platform_login_id", login)
+                //         .update({ status: 0 });
+                // }
                 if(response?.success)
                 {
                     // Store activity record (optimized)
@@ -128,6 +128,12 @@ async function webhookNotificationService(params = {}) {
                             email_type : 'SOFTBREACH_2_PERCENT'
                         }
                     };
+                    // Check for hard breach and add "Hard Breach" activity type if not present
+                    if (response?.data.breach_type == 'hard_breach') {
+                        await knex("platform_accounts")
+                        .where("platform_login_id", login)
+                        .update({ status: 0 });
+                    }
                     const activity = activityTypes[notificationType];
                     
                     if (activity) {
@@ -146,12 +152,12 @@ async function webhookNotificationService(params = {}) {
                     let emailUrl = `${process.env.EMAIL_API_URL}/api/v1/send-email`;
                     const emailData = {
                         email: platformAccount?.email,
-                        email_type: activity?.email_type,
+                        email_type: response?.data.breach_type == 'hard_breach' ? 'SOFTBREACH_2_PERCENT' : activity?.email_type,
                         data: {
                             first_name: platformAccount?.first_name,
                             detail: description
                         }
-                    };
+                    }; 
                     
                     try {
                         await emailService(emailUrl, emailData, 'POST');
