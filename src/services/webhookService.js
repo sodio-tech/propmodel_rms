@@ -110,11 +110,11 @@ async function webhookNotificationService(params = {}) {
                         .where("platform_login_id", login)
                         .update({ status: 0 });
                         let emailType = 'SOFT_TO_HARD_BREACH'; 
-                        const emailData = {
+                        let eData = {
                             first_name: platformAccount?.first_name,
                             detail: description
                         }
-                        await sendEmail(userEmail, emailType, emailData);
+                        await sendEmail(userEmail, emailType, eData);
                     }
                     const activity = activityTypes[notificationType];
                     
