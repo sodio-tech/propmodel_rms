@@ -137,7 +137,7 @@ async function webhookNotificationService(params = {}) {
                     }
 
                     // Send email to user
-                    let emailType = response?.data.breach_type == 'hard_breach' ? 'STOP_LOSS_VIOLATION' : activity?.email_type; 
+                    let emailType = activity?.email_type; 
                     const emailData = {
                         first_name: platformAccount?.first_name,
                         detail: description
