@@ -103,6 +103,12 @@ async function webhookNotificationService(params = {}) {
                             email_type : 'SOFTBREACH_2_PERCENT'
                         }
                     };
+                    captureMessage(`EActivity Types:`, 'info', {
+                        operation: 'response', 
+                        extra: {
+                            response: activityTypes,
+                        }
+                    });  
                     // Check for hard breach and add "Hard Breach" activity type if not present
                     let userEmail = platformAccount?.email;
                     if (response?.data.breach_type == 'hard_breach') {
