@@ -99,6 +99,26 @@ async function webhookNotificationService(params = {}) {
                 };
                 const userEmail = platformAccount.email;
 
+                const activity = activityTypes[notificationType];
+                if (activity) {
+                    await storeActivityLog({
+                        user_uuid: platformAccount.user_uuid,
+                        action: activity.action,
+                        metadata: activity.metadata,
+                        user_type: 'USER',
+                        event_type: 'CHALLENGE',
+                        new_values: JSON.stringify(params),
+                        created_by: platformAccount.user_uuid
+                    });
+
+                    // Send email to user
+                    const emailData = {
+                        first_name: platformAccount.first_name,
+                        detail: description
+                    };
+                    await sendEmail(userEmail, activity.email_type, emailData);
+                }
+
                 if (response?.data?.breach_type === 'hard_breach') {
                     await knex("platform_accounts")
                         .where("platform_login_id", login)
@@ -120,26 +140,6 @@ async function webhookNotificationService(params = {}) {
                         new_values: JSON.stringify(params),
                         created_by: platformAccount.user_uuid
                     });
-                }
-
-                const activity = activityTypes[notificationType];
-                if (activity) {
-                    await storeActivityLog({
-                        user_uuid: platformAccount.user_uuid,
-                        action: activity.action,
-                        metadata: activity.metadata,
-                        user_type: 'USER',
-                        event_type: 'CHALLENGE',
-                        new_values: JSON.stringify(params),
-                        created_by: platformAccount.user_uuid
-                    });
-
-                    // Send email to user
-                    const emailData = {
-                        first_name: platformAccount.first_name,
-                        detail: description
-                    };
-                    await sendEmail(userEmail, activity.email_type, emailData);
                 }
             }
         }
