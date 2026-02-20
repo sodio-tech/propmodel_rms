@@ -107,23 +107,31 @@ async function webhookNotificationService(params = {}) {
                     // Check for hard breach and add "Hard Breach" activity type if not present
                     let userEmail = platformAccount?.email;
                     if (response?.data.breach_type == 'hard_breach') {
+
                         await knex("platform_accounts")
                         .where("platform_login_id", login)
                         .update({ status: 0 });
+
                         let emailType = 'SOFT_TO_HARD_BREACH'; 
                         let eData = {
                             first_name: platformAccount?.first_name,
                             detail: description
                         }
                         await sendEmail(userEmail, emailType, eData);
+
+                        await storeActivityLog({ 
+                            user_uuid: platformAccount?.user_uuid, 
+                            action: 'CHALLENGE_FAILED', 
+                            metadata: `Your account is failed to complete the challenge - ${login}`, 
+                            user_type: 'USER',
+                            event_type: 'CHALLENGE',
+                            new_values: JSON.stringify(params),
+                            created_by: platformAccount?.user_uuid 
+                        });
+
                     }
                     const activity = activityTypes[notificationType];
-                    captureMessage(`EActivity Types:`, 'info', {
-                        operation: 'response', 
-                        extra: {
-                            response: activity,
-                        }
-                    }); 
+                  
                     if (activity) {
                         await storeActivityLog({
                             user_uuid: platformAccount?.user_uuid,
