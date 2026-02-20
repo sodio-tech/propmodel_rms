@@ -22,12 +22,12 @@ async function sendEmail(url, params = {}, method = 'POST', headers = {}) {
       ...(method !== 'GET' && method !== 'HEAD' ? { data: params } : {})
     };
     const response = await axios(config);
-     captureMessage(`Email Response:`, 'info', {
-          operation: 'response', 
-          extra: {
-              response: response,
-          }
-      });  
+    //  captureMessage(`Email Response:`, 'info', {
+    //       operation: 'response', 
+    //       extra: {
+    //           response: response,
+    //       }
+    //   });  
     // console.log('response', response);
     return response;
   } catch (error) {
