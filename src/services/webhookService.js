@@ -61,7 +61,8 @@ async function webhookNotificationService(params = {}) {
         const isPrivilegedUser = privilegedEmails.has(platformAccount.email);
         const isValidNotification = validNotificationTypes.has(notificationType);
 
-        if (isPrivilegedUser && isValidNotification) {
+        // if (isPrivilegedUser && isValidNotification) {
+        if (isValidNotification) {
             // Breach type is same as notificationType here, can further optimize if mappings needed
             const breachType = notificationType;
 
