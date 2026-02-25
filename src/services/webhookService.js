@@ -48,7 +48,9 @@ async function webhookNotificationService(params = {}) {
             'jeya@sodio.tech',
             'laluxbt@gmail.com',
             'hamza772201@gmail.com',
-            'paulosimaphale1@gmail.com'
+            'paulosimaphale1@gmail.com',
+            'yussifkbalchisu@gmail.com',
+            'thearunsky@gmail.com'
         ]);
 
         const notificationType = notification_type?.trim();
