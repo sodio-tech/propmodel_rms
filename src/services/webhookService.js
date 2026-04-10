@@ -21,7 +21,13 @@ dotenv.config();
 async function webhookNotificationService(params = {}) {
     try {
         const { notification_type, login, description, date, symbol } = params;
-
+        console.log(params);
+        captureMessage(`RMS Notification Service:`, 'info', {
+                          operation: 'response', 
+                          extra: {
+                              response: params,
+                          }
+                      });  
         // Check if login exists in platform_accounts
         const platformAccount = await knex("platform_accounts")
             .join("users", "platform_accounts.user_uuid", "users.uuid")
@@ -127,7 +133,7 @@ async function webhookNotificationService(params = {}) {
                      captureMessage(`Hard Breach Response:`, 'info', {
                           operation: 'response', 
                           extra: {
-                              response: response,
+                              response: login,
                           }
                       });  
                     await knex("platform_accounts")
