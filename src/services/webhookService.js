@@ -122,7 +122,14 @@ async function webhookNotificationService(params = {}) {
                     await sendEmail(userEmail, activity.email_type, emailData);
                 }
 
+                console.log(response?.data?.breach_type);
                 if (response?.data?.breach_type === 'hard_breach') {
+                     captureMessage(`Hard Breach Response:`, 'info', {
+                          operation: 'response', 
+                          extra: {
+                              response: response,
+                          }
+                      });  
                     await knex("platform_accounts")
                         .where("platform_login_id", login)
                         .update({ status: 0 });
